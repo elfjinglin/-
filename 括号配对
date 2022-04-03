@@ -1,0 +1,149 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
+
+#define OK 1
+#define ERROR 0
+#define TRUE 1
+#define FALSE 0
+#define MAXSIZE 100
+
+typedef int Status;
+typedef char SElemType;
+
+/*定义链表栈*/
+typedef struct StackNode {
+    SElemType data;
+    struct StackNode* next;
+}StackNode, LinkStack;
+
+//初始化链表
+Status InitStack(LinkStack *L) 
+{
+    L = (LinkStack*)malloc(sizeof(LinkStack));
+    if (!L->data) return 0;
+    L->data = 0;
+    L->next = NULL;
+    return 1;
+}
+
+//判定栈是否为空
+Status StackEmpty(LinkStack *L)
+{
+    L == NULL;
+    return 0;
+}
+
+//入栈
+Status Push(LinkStack* L, SElemType e)
+{
+    LinkStack* n;//新节点
+    n = (LinkStack*)malloc(sizeof(LinkStack));
+    if (!n->data) return 0;
+    n->data = e;//存入数据
+    n->next = L->next;//链栈栈顶元素链入新节点，新节点变成栈顶
+    L->next = n;//新节点链入链栈头结点末尾
+    return 1;
+}
+
+//出栈
+Status Pop(LinkStack* L, SElemType* e)
+{
+    if (!L->next) return 0;//栈空，返回0
+    LinkStack* d = L->next;//出栈指针指向栈顶
+    *e = d->data;//赋值
+    L->next = d->next;//头结点跳过出栈节点，链入出栈节点的下一节点
+    free(d);//释放内存
+    return 1;
+
+}
+
+//获取栈顶元素
+Status GetTop(LinkStack* L, SElemType* e)
+{
+    if (!L->next) return 0;
+    *e = L->next->data;
+    return 1;
+
+}
+
+//检查两个括号是否匹配
+Status match(char element_l, char element_r) {
+    if (element_l == '(') {
+        if (element_r == ')') {
+            return TRUE;
+        }
+        else {
+            return FALSE;
+        }
+    }
+    else if (element_l == '[') {
+        if (element_r == ']') {
+            return TRUE;
+        }
+        else {
+            return FALSE;
+        }
+    }
+    else if (element_l == '{') {
+        if (element_r == '}') {
+            return TRUE;
+        }
+        else {
+            return FALSE;
+        }
+    }
+    else {
+        exit(0);
+    }
+}
+
+
+int main() {
+    LinkStack S;
+    int i = 0;
+    char e;
+    int lenth = 0;
+    char str[MAXSIZE];
+    InitStack(&S);
+    scanf("%s", str);//输入一串括号
+    lenth = strlen(str);
+    for (i = 0; i < lenth; i++) {
+        switch (str[i]) {
+        case '(':
+        case '[':
+        case '{':
+            Push(&S, str[i]);
+            break;
+        case ')':
+        case ']':
+        case '}':
+            if (TRUE == StackEmpty(&S)) {
+                printf("右括号多余\n");
+                exit(0);
+            }
+            else {
+                GetTop(&S, &e);
+                if (TRUE == match(e, str[i])) {
+                    Pop(&S, &e);
+                }
+                else {
+                    printf("左右括号不匹配\n");
+                    exit(0);
+                }
+            }
+            break;
+        default:
+            exit(0);
+        }
+    }
+    if (TRUE == StackEmpty(&S)) {
+        printf("括号匹配\n");
+    }
+    else {
+        printf("左括号多余\n");
+        exit(0);
+    }
+    return 0;
+}
